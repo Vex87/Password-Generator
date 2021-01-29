@@ -1,6 +1,7 @@
 MIN_LENGTH = 8
 MAX_LENGTH = 32
 DEFAULT_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
+DEFAULT_NUMBERS = "0123456789"
 
 import random
 
@@ -10,19 +11,23 @@ def generate_password(info):
     for _ in range(info["length"]):
         random_character = random.choice(info["characters"])
 
-        if info["includes_uppercase_characters"] == True and (round(random.random()) == 1):
+        if info["includes_uppercase_characters"] == True and (isinstance(random_character, str)) and (round(random.random()) == 1):
             random_character = random_character.upper()
 
-        password = password + random_character
+        password = password + str(random_character)
 
     return password
 
 def get_characters():
-    return list(DEFAULT_CHARACTERS)
+    characters = list(DEFAULT_CHARACTERS)
+    if DEFAULT_NUMBERS:
+        characters.extend(list(DEFAULT_NUMBERS))
+    
+    return characters
 
-def get_choice_of_including_uppercase_characters():
+def get_boolean_choice(text):
     while True:
-        input_text = input("Include uppercase characters? (Y/N): ")
+        input_text = input(f"{text} (Y/N): ")
         if input_text.lower() == "y":
             return True
         elif input_text.lower() == "n":
@@ -49,15 +54,16 @@ def get_length():
 def main():
     password = generate_password({
         "length": get_length(),
-        "includes_uppercase_characters": get_choice_of_including_uppercase_characters(),
+        "includes_uppercase_characters": get_boolean_choice("Include uppercase characters?"),
+        "has_numbers": get_boolean_choice("Include numbers?"),
         "characters": get_characters(),
     })
 
-    print(password)
+    print(f"GENERATED PASSWORD: {password}")
 
     """
     has_symbols = True
-    has_numbers = True
+   
     includes_lowercase_characters = True
     includes_uppercase_characters = True
     includes_similar_characters = True
