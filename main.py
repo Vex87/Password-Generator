@@ -9,6 +9,10 @@ def generate_password(info):
 
     for _ in range(info["length"]):
         random_character = random.choice(info["characters"])
+
+        if info["includes_uppercase_characters"] == True and (round(random.random()) == 1):
+            random_character = random_character.upper()
+
         password = password + random_character
 
     return password
@@ -16,31 +20,37 @@ def generate_password(info):
 def get_characters():
     return list(DEFAULT_CHARACTERS)
 
-def get_length():
-    desired_length = None
+def get_choice_of_including_uppercase_characters():
+    while True:
+        input_text = input("Include uppercase characters? (Y/N): ")
+        if input_text.lower() == "y":
+            return True
+        elif input_text.lower() == "n":
+            return False
+        else:
+            continue
 
-    while not desired_length:
+def get_length():
+    while True:
         desired_length = input("Enter desired length of password: ")
     
         try:
             desired_length = int(desired_length)
         except ValueError:
-            desired_length = None
             continue
 
         if not isinstance(desired_length, int):
-            desired_length = None
             continue
-        if desired_length < MIN_LENGTH or desired_length > MAX_LENGTH:
-            desired_length = None
+        elif desired_length < MIN_LENGTH or desired_length > MAX_LENGTH:
             continue
 
-    return desired_length
+        return desired_length
 
 def main():
     password = generate_password({
         "length": get_length(),
-        "characters": get_characters()
+        "includes_uppercase_characters": get_choice_of_including_uppercase_characters(),
+        "characters": get_characters(),
     })
 
     print(password)
