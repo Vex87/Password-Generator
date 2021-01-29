@@ -1,29 +1,34 @@
 MIN_LENGTH = 8
 MAX_LENGTH = 32
-DEFAULT_CHARACTERS = "abcdefghijklmnopqrstuvwxyz"
+DEFAULT_LETTERS = "abcdefghijklmnopqrstuvwxyz"
 DEFAULT_NUMBERS = "0123456789"
+DEFAULT_ANBIGUOUS_CHARACTERS = "_!#^*$%"
 
 import random
+from colorama import Fore, Style
 
 def generate_password(info):
+    get_characters(info)
     password = ""
 
     for _ in range(info["length"]):
         random_character = random.choice(info["characters"])
-
-        if info["includes_uppercase_characters"] == True and (isinstance(random_character, str)) and (round(random.random()) == 1):
-            random_character = random_character.upper()
-
         password = password + str(random_character)
 
     return password
 
-def get_characters():
-    characters = list(DEFAULT_CHARACTERS)
-    if DEFAULT_NUMBERS:
+def get_characters(info):
+    characters = list(DEFAULT_LETTERS)
+
+    if info["includes_uppercase_characters"]:
+        for letter in list(DEFAULT_LETTERS):
+            characters.append(letter.upper())
+    if info["has_numbers"]:
         characters.extend(list(DEFAULT_NUMBERS))
+    if info["has_anbiguous_characters"]:
+        characters.extend(list(DEFAULT_ANBIGUOUS_CHARACTERS))
     
-    return characters
+    info["characters"] = characters
 
 def get_boolean_choice(text):
     while True:
@@ -52,23 +57,17 @@ def get_length():
         return desired_length
 
 def main():
-    password = generate_password({
-        "length": get_length(),
-        "includes_uppercase_characters": get_boolean_choice("Include uppercase characters?"),
-        "has_numbers": get_boolean_choice("Include numbers?"),
-        "characters": get_characters(),
-    })
+    while True:
+        password = generate_password({
+            "length": get_length(),
+            "includes_uppercase_characters": get_boolean_choice("Include uppercase characters?"),
+            "has_numbers": get_boolean_choice("Include numbers?"),
+            "has_anbiguous_characters": get_boolean_choice("Include anbiguous characters?"),
+            "characters": []
+        })
 
-    print(f"GENERATED PASSWORD: {password}")
-
-    """
-    has_symbols = True
-   
-    includes_lowercase_characters = True
-    includes_uppercase_characters = True
-    includes_similar_characters = True
-    includes_anbiguous_characters = True
-    """
+        print(Fore.GREEN + password)
+        print(Style.RESET_ALL) 
 
 if (__name__ == "__main__"):
     main()
